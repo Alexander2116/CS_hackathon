@@ -11,3 +11,4 @@ import sys
 import subprocess
 
 subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pyqt5'])
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'manim'])
