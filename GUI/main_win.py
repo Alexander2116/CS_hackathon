@@ -5,41 +5,42 @@
 
 
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QDesktopWidget, QMessageBox, QListWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QDesktopWidget, QMessageBox, QListWidget, QMainWindow, QAction
 from PyQt5.QtCore import Qt
 from Drag_Drop import DD_Window
+from animated_back import VideoBackground
 
-class MyWindow(QWidget):
-    names_parameters = {
-    "name": "Space rocks!"
-}
+class MainWindow(QMainWindow):
+    
+    params = {
+        "name":"space rocks!"
+    }
+    
     def __init__(self):
         super().__init__()
+
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle(self.names_parameters['name'])
-        self.setFixedSize(QDesktopWidget().availableGeometry().size())
+        # Create actions for the toolbar
+        exitAct = QAction('Objects', self)
+        exitAct.triggered.connect(self.DD_win)
 
-        self.myListWidget1 = QListWidget()
-        self.myListWidget1.setAcceptDrops(True)
-        
-        self.label = QLabel('Hello, PyQt!', self)
-        self.button = QPushButton('Click me!', self)
-        self.DDbutton = QPushButton('Items', self)
+        # Create the toolbar
+        toolbar = self.addToolBar('Toolbar')
+        toolbar.addAction(exitAct)
 
-        
-        layout = QVBoxLayout()
-        layout.addWidget(self.myListWidget1)
-        layout.addWidget(self.label)
-        layout.addWidget(self.button)
-        layout.addWidget(self.DDbutton)
-        self.activateWindow()
-        self.setLayout(layout)
+        screen_rect = QApplication.desktop().screenGeometry(QApplication.desktop().primaryScreen())
+        # Create a central widget
+        self.central_widget = VideoBackground("C:\\Program Files (x86)\\GitHub\\CS_hackathon\\media\\videos\\1080p60\\Earth.mp4")
+        self.setCentralWidget(self.central_widget)
+        self.setAcceptDrops(True)
+        self.central_widget.setAcceptDrops(True)
+        self.central_widget.setAlignment(Qt.AlignCenter)
 
-        self.button.clicked.connect(self.on_button_clicked)
-        self.button.clicked.connect(self.dialog)
-        self.DDbutton.clicked.connect(self.DD_win)
+        # Set window title and size
+        self.setWindowTitle(self.params["name"])
+        self.setGeometry(0, 0, screen_rect.width(), screen_rect.height())
 
     def on_button_clicked(self):
         self.label.setText('Button clicked!')
@@ -62,7 +63,7 @@ class MyWindow(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = MyWindow()
+    window = MainWindow()
     window.setWindowFlags(window.windowFlags() | Qt.WindowStaysOnTopHint)
     window.show()
     sys.exit(app.exec_())

@@ -8,7 +8,7 @@ class VideoBackground(QLabel):
     def __init__(self, video_path):
         super().__init__()
         self.video_capture = cv2.VideoCapture(video_path)
-
+        self.setAcceptDrops(True)
         # Set up timer to update the frame
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
@@ -24,6 +24,7 @@ class VideoBackground(QLabel):
             self.setPixmap(QPixmap.fromImage(q_image))
         else:
             self.video_capture.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset video to the beginning
+            
 
 class MainWindow(QMainWindow):
     def __init__(self):
