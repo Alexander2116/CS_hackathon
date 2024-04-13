@@ -1,0 +1,2 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/ksenijakovalenka/Documents/GitHub/CS_hackathon/media/videos/1080p60/partial_movie_files/Earth/1413466013_1664913076_3751973931.mp4'
