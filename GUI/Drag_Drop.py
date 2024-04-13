@@ -2,11 +2,25 @@
     This is simple drag and drop window. It will be integrated into the main window.
 """
 
-from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QHBoxLayout,QListWidgetItem
+from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QHBoxLayout,QListWidgetItem, QLabel
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 import sys
 import json
 
+
+class DraggableLabel(QListWidgetItem):
+    def __init__(self, text):
+        super().__init__()
+        
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.offset = event.pos()
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & Qt.LeftButton:
+            self.move(self.pos() + event.pos() - self.offset)
  
 class DD_Window(QWidget):
     object_list = json.load(open("GUI\\object.json"))
@@ -28,6 +42,8 @@ class DD_Window(QWidget):
         self.myLayout = QHBoxLayout()
         self.myLayout.addWidget(self.myListWidget1)
         self.myLayout.addWidget(self.myListWidget2)
+        self.activateWindow()
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
         obj_comp = []
         keys = self.object_list.keys()
@@ -45,7 +61,7 @@ class DD_Window(QWidget):
  
  
  
- 
+"""
 App = QApplication(sys.argv)
 window = DD_Window()
-sys.exit(App.exec())
+sys.exit(App.exec())"""
