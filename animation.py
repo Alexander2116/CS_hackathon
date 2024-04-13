@@ -30,4 +30,4 @@ if __name__ == "__main__":
     # To view the animation, run the script with the command 'manim -pql custom_animation.py CustomAnimation'
     Example().render()
 
-    #hi!  
+    #hi! hi
