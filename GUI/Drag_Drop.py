@@ -5,10 +5,11 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QHBoxLayout,QListWidgetItem
 from PyQt5.QtGui import QIcon
 import sys
-
+import json
 
  
 class DD_Window(QWidget):
+    object_list = json.load(open("GUI\\object.json"))
     params = {
         "name": "Drag and Drop Example",
         "win_size": (300, 350, 500, 300),
@@ -27,23 +28,15 @@ class DD_Window(QWidget):
         self.myLayout = QHBoxLayout()
         self.myLayout.addWidget(self.myListWidget1)
         self.myLayout.addWidget(self.myListWidget2)
+
+        obj_comp = []
+        keys = self.object_list.keys()
+        for key in keys:
+            obj_comp.append(QListWidgetItem(QIcon("Objects\\icons\\"+self.object_list[key]), key))
+        
+        for i in range(len(obj_comp)):
+            self.myListWidget1.insertItem(i, obj_comp[i])
  
-        l1 = QListWidgetItem(QIcon('cpp.png'), "C++")
-        l2 = QListWidgetItem(QIcon('csharp.png'), "C# ")
-        l3 = QListWidgetItem(QIcon('java.png'), "Java")
-        l4 = QListWidgetItem(QIcon('pythonicon.png'), "Python")
- 
-        self.myListWidget1.insertItem(1, l1)
-        self.myListWidget1.insertItem(2, l2)
-        self.myListWidget1.insertItem(3, l3)
-        self.myListWidget1.insertItem(4, l4)
- 
-        QListWidgetItem(QIcon('html.png'), "HTLM", self.
-                        myListWidget2)
-        QListWidgetItem(QIcon('css.png'), "CSS", self.
-                        myListWidget2)
-        QListWidgetItem(QIcon('javascript.png'), "Javascript", self.
-                        myListWidget2)
  
         self.setWindowTitle('Drag and Drop Example')
         self.setLayout(self.myLayout)
