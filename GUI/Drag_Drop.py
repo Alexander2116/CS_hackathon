@@ -6,7 +6,6 @@ from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QHBoxLayout,QLis
 from PyQt5.QtGui import QIcon, QDrag
 from PyQt5.QtCore import Qt, QMimeData
 import sys
-import json
 from Objects.base_objects import rock_base, sattelite_base
 
 class Def_Widget(QListWidgetItem):
@@ -29,75 +28,19 @@ class Def_Widget(QListWidgetItem):
                 
         mbox.exec_()
 
-class rock(QListWidgetItem):
+class rock(Def_Widget):
     def __init__(self):
         self.rock = rock_base()
-        super().__init__(QIcon("GUI\\Objects\\icons\\"+self.rock.image), "rock")
-    @property
-    def pos(self):
-        return self.rock.pos
-    
-    @property
-    def vel(self):
-        return self.rock.vel
-    
-    @property
-    def mass(self):
-        return self.rock.mass
-    
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.offset = event.pos()
-
-    def mouseMoveEvent(self, event):
-        if event.buttons() & Qt.LeftButton:
-            self.move(self.pos() + event.pos() - self.offset)
-    
-    def dialog(self):
-        mbox = QMessageBox()
-
-        name, done1 = QInputDialog.getText(
-             self, 'Input Dialog', 'Enter your name:') 
-                
-        mbox.exec_()
+        super().__init__(self.rock.image, "rock")  
         
-        
-class satellite(QListWidgetItem):
+class satellite(Def_Widget):
     def __init__(self):
-        self.rock = rock_base()
-        super().__init__(QIcon("GUI\\Objects\\icons\\"+self.rock.image), "rock")
+        self.satellite = sattelite_base()
+        super().__init__(self.satellite.image, "satellite")
         
-    @property
-    def pos(self):
-        return self.rock.pos
-    
-    @property
-    def vel(self):
-        return self.rock.vel
-    
-    @property
-    def mass(self):
-        return self.rock.mass
-    
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.offset = event.pos()
-
-    def mouseMoveEvent(self, event):
-        if event.buttons() & Qt.LeftButton:
-            self.move(self.pos() + event.pos() - self.offset)
-    
-    def dialog(self):
-        mbox = QMessageBox()
-
-        name, done1 = QInputDialog.getText(
-             self, 'Input Dialog', 'Enter your name:') 
-                
-        mbox.exec_()
  
 class DD_Window(QWidget):
     
-    object_list = json.load(open("GUI\\object.json"))
     params = {
         "name": "Objects",
         "win_size": (300, 350, 200, 100),
@@ -119,7 +62,7 @@ class DD_Window(QWidget):
         #### Append objects to the list
         obj_comp = []
         obj_comp.append(rock())
-        #obj_comp.append(sattelite())
+        obj_comp.append(satellite())
         
         ####
         
