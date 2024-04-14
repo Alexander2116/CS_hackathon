@@ -2,9 +2,9 @@
     This is simple drag and drop window. It will be integrated into the main window.
 """
 
-from PyQt5.QtWidgets import QApplication, QWidget, QListWidget, QHBoxLayout,QListWidgetItem, QLabel, QMessageBox, QInputDialog
+from PyQt5.QtWidgets import * #QApplication, QWidget, QListWidget, QHBoxLayout,QListWidgetItem, QLabel, QMessageBox, QInputDialog
 from PyQt5.QtGui import QIcon, QDrag
-from PyQt5.QtCore import Qt, QMimeData
+from PyQt5.QtCore import Qt, QMimeData, QPointF
 import sys
 from Objects.base_objects import rock_base, sattelite_base
 
@@ -22,11 +22,42 @@ class Def_Widget(QListWidgetItem):
     
     def dialog(self):
         mbox = QMessageBox()
-
+        mbox.setWindowModality(2)
         name, done1 = QInputDialog.getText(
              self, 'Input Dialog', 'Enter your name:') 
                 
         mbox.exec_()
+        
+    def dragEnterEvent(self, event):
+        print("dragEnterEvent:")
+
+        if event.mimeData().hasUrls():
+            event.accept()   # must accept the dragEnterEvent or else the dropEvent can't occur !!!
+        else:
+            event.ignore()
+            
+    def dropEvent(self, event):
+
+        self.dialog()
+        #self.drop_area_label.setText(text)
+        
+
+    # mouse click event
+    def mousePressEvent(self, event):
+        pass
+
+    def mouseMoveEvent(self, event):
+        orig_cursor_position = event.lastScenePos()
+        updated_cursor_position = event.scenePos()
+
+        orig_position = self.scenePos()
+
+        updated_cursor_x = updated_cursor_position.x() - orig_cursor_position.x() + orig_position.x()
+        updated_cursor_y = updated_cursor_position.y() - orig_cursor_position.y() + orig_position.y()
+        self.setPos(QPointF(updated_cursor_x, updated_cursor_y))
+
+    def mouseReleaseEvent(self, event):
+        print('x: {0}, y: {1}'.format(self.pos().x(), self.pos().y()))
 
 class rock(Def_Widget):
     def __init__(self):
