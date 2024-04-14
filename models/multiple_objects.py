@@ -1,6 +1,8 @@
 from manim import *
 import numpy as np
 import math 
+from random import randint
+import json
 
 def spherical_to_cartesian_velocity(vel, coords):
     if len(vel) != 3:
@@ -43,8 +45,30 @@ class Example(Scene):
     def construct(self):
 
         # initial parameters
+        if len(sys.argv) < 2:
+            print("Usage: python animate_png.py <position> <velocity>")
+            sys.exit(1)
+        arg1 = json.loads(sys.argv[1])
+        arg2 = json.loads(sys.argv[2])
+        
+        
+        
+        #scale_p = np.max(positions.flatten())/2
+        #scale_v = np.max(velocities_spherical.flatten())/2
+    
+        
+        scale_p = np.max(np.absolute(np.array(arg1).flatten().flatten()))/2
+        scale_v = np.max(np.absolute(np.array(arg2).flatten().flatten()))/2
+        
+        positions = arg1/scale_p
+        velocities_spherical = arg2/scale_v
+        
+        print(scale_p, scale_v)
 
+        
+        
         # initial positions; NB defines how many objects ve have!
+        """
         positions = [
             [1.5, 1.5, 1],
             [1.5, -1.5, -1],
@@ -55,8 +79,12 @@ class Example(Scene):
             [5, 10, 0],
             [1, 4, 7]
         ]
+        """
         # masses = [1, 2, 3]
-        colours = [BLUE, GREEN, ORANGE]
+        colours = []
+
+        for i in range(len(positions)):
+            colours.append('#%06X' % randint(0, 0xFFFFFF))
 
         # time parameters
         timestep = 0.01
@@ -119,3 +147,12 @@ class Example(Scene):
 
                     line = Line(pos_0, positions[index])
                     self.play(MoveAlongPath(trash, line, rate_func=linear, run_time=0.01))
+                    
+        print(velocities_spherical)
+        print(positions)
+        print(scale_p, scale_v)
+        
+if __name__ == "__main__":
+    # To view the animation, run the script with the command 'manim -pql custom_animation.py CustomAnimation'
+    Example().render()
+    #hi! hi

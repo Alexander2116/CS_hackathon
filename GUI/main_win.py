@@ -6,10 +6,32 @@
 
 import sys
 from PyQt5.QtWidgets import * #QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QDesktopWidget, QFormLayout, QLineEdit, QMessageBox, QListWidget, QMainWindow, QAction
-from PyQt5.QtCore import Qt, QMimeData, QPoint, pyqtSignal
-from Drag_Drop import DD_Window
-from animated_back import VideoBackground
-from PyQt5.QtGui import QIcon, QDrag
+from PyQt5.QtCore import Qt, QMimeData, QPoint, pyqtSignal, QTimer
+from PyQt5.QtGui import QIcon, QDrag, QImage, QPixmap
+import cv2
+import json
+import subprocess
+
+class VideoBackground(QLabel):
+    def __init__(self, video_path):
+        super().__init__()
+        self.video_capture = cv2.VideoCapture(video_path)
+        self.setAcceptDrops(True)
+        # Set up timer to update the frame
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_frame)
+        self.timer.start(int(1000 // self.video_capture.get(cv2.CAP_PROP_FPS)))
+
+    def update_frame(self):
+        ret, frame = self.video_capture.read()
+        if ret:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            h, w, ch = frame.shape
+            bytes_per_line = ch * w
+            q_image = QImage(frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
+            self.setPixmap(QPixmap.fromImage(q_image))
+        else:
+            self.video_capture.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Reset video to the beginning
 
 
 class enter_parametrs(QDialog):
@@ -19,7 +41,7 @@ class enter_parametrs(QDialog):
         
     def initUI(self):
         self.setWindowTitle("Enter parametrs")
-        self.setGeometry(100, 100, 400, 200)
+        self.setGeometry(100, 100, 200, 150)
         layout = QFormLayout(self)
         
         self.p = QLineEdit(self)
@@ -215,21 +237,38 @@ class MainWindow(QMainWindow):
         
     def run_animation(self):
         # update pos for all objects
+        positions = []
+        velocities = []
         for i in range(len(self.scene.items())):
             if isinstance(self.scene.items()[i], QGraphicsRectItem):
                 object_params = self.object_params[i]
                 temp_pos = (self.scene.items()[i].pos().x(),self.scene.items()[i].pos().y(),object_params["pos"][2])
                 self.object_params[i].update({"pos":temp_pos})
-                print(self.object_params[i])
+                positions.append(self.object_params[i]["pos"])
+                velocities.append(self.object_params[i]["vel"])
                 
-        # run animation
+        # Replace 'script_to_run.py' with the path to the Python script you want to run
+        script_path = '.\\models\\multiple_objects.py'
+
+        # List of lists to pass as arguments
+
+        # Serialize the list of lists into a JSON string
+        args1 = json.dumps(positions)
+        args2 = json.dumps(velocities)
+
+        # Run the script with the serialized JSON string as an argument
+        subprocess.call(['python', script_path, args1, args2])
+        
+        self.central_widget = VideoBackground("C:\\Program Files (x86)\\GitHub\\CS_hackathon\\media\\videos\\1080p60\\Example.mp4")
+        self.central_widget.setAcceptDrops(True)
+        self.central_widget.setAlignment(Qt.AlignCenter)
+        self.setCentralWidget(self.central_widget)
+        
 
     
     def on_text_entered(self, text):
         self.add_new_object = text
         
-    def DD_win(self):
-        self.DD_window = DD_Window()
         
     def dragEnterEvent(self, event):
         print("dragEnterEvent")
