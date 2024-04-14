@@ -95,13 +95,15 @@ class Example(Scene):
                     self.remove(arrow_list[index])
                     self.play(MoveAlongPath(trash, line, rate_func=linear, run_time=0.01))
                 else:
-                    if positions[index][2] < 0:
+                    z = positions[index][2]
+                    if z <= 0:
                         # bring the object behind the earth
                         self.bring_to_front(earth)
+                        scale_factor = 1 + z/2
                     else:
                         self.bring_to_front(trash)
                         self.bring_to_front(arrow_list[index])
-                    
+                        scale_factor = z
                     # get acceleration
                     acceleration_rad = -80/r_squared
                     # update radial velocity
@@ -118,5 +120,8 @@ class Example(Scene):
                     arrow_list[index].shift(positions[index])
 
                     line = Line(pos_0, positions[index])
+                    trash.scale(scale_factor)
                     self.play(MoveAlongPath(trash, line, rate_func=linear, run_time=0.01))
+                    trash.scale(1/scale_factor)
+
 Example().render()
