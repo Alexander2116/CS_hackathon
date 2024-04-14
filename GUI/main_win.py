@@ -24,13 +24,9 @@ class enter_parametrs(QDialog):
         
         self.p = QLineEdit(self)
         self.vel = QLineEdit(self)
-        self.m = QLineEdit(self)
-        self.s = QLineEdit(self)
         
-        layout.addRow("Position (x,y)", self.p)
-        layout.addRow("Velocity (x,y)", self.vel)
-        layout.addRow("Mass", self.m)
-        layout.addRow("Size (H,W)", self.s)
+        layout.addRow("Position (x,y,z)", self.p)
+        layout.addRow("Velocity (x,y,z)", self.vel)
         
         self.ok_button = QPushButton("OK", self)
         self.ok_button.clicked.connect(self.ok_button_pressed)
@@ -38,7 +34,7 @@ class enter_parametrs(QDialog):
         self.setWindowFlags(Qt.WindowStaysOnTopHint)
         
     def ok_button_pressed(self):
-        if(self.p.text() == "" or self.vel.text() == "" or self.m.text() == "" or self.s.text() == ""):
+        if(self.p.text() == "" or self.vel.text() == ""):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
             msg.setText("Please fill all the fields")
@@ -46,7 +42,7 @@ class enter_parametrs(QDialog):
             msg.setWindowFlags(Qt.WindowStaysOnTopHint)
             msg.exec_()
             
-        elif(len(self.p.text().split(",")) != 3 or len(self.vel.text().split(",")) != 3 or len(self.s.text().split(",")) != 2):
+        elif(len(self.p.text().split(",")) != 3 or len(self.vel.text().split(",")) != 3):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
             msg.setText("Incorrect values, follow the pattern")
@@ -54,8 +50,7 @@ class enter_parametrs(QDialog):
             msg.setWindowFlags(Qt.WindowStaysOnTopHint)
             msg.exec_()
             
-        elif(not ((self.p.text().split(",")[0].isnumeric() and self.p.text().split(",")[1].isnumeric() and self.p.text().split(",")[2].isnumeric()) and (self.vel.text().split(",")[0].isnumeric() and self.vel.text().split(",")[1].isnumeric() and self.vel.text().split(",")[2].isnumeric()) and self.m.text().isnumeric() and \
-             (self.s.text().split(",")[0].isnumeric() and self.s.text().split(",")[1].isnumeric()))):
+        elif(not ((self.p.text().split(",")[0].isnumeric() and self.p.text().split(",")[1].isnumeric() and self.p.text().split(",")[2].isnumeric()) and (self.vel.text().split(",")[0].isnumeric() and self.vel.text().split(",")[1].isnumeric() and self.vel.text().split(",")[2].isnumeric()))):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
             msg.setText("Incorrect values, enter numeric values only")
@@ -69,9 +64,7 @@ class enter_parametrs(QDialog):
     def get_params(self):
         return {
             "pos":(float(self.p.text().split(",")[0]), float(self.p.text().split(",")[1]), float(self.p.text().split(",")[2])),
-            "vel":(float(self.vel.text().split(",")[0]), float(self.vel.text().split(",")[1]), float(self.vel.text().split(",")[2])),
-            "mass":float(self.m.text()),
-            "size":(float(self.s.text().split(",")[0]), float(self.s.text().split(",")[1] ))
+            "vel":(float(self.vel.text().split(",")[0]), float(self.vel.text().split(",")[1]), float(self.vel.text().split(",")[2]))
         }
 
 class PopUp(QDialog):
@@ -82,18 +75,19 @@ class PopUp(QDialog):
         
     def initUI(self):
         self.setWindowTitle("Pop Up")
-        self.setGeometry(100, 100, 400, 200)
+        self.setGeometry(100, 100, 100, 100)
         layout = QVBoxLayout(self)
-        label = QLabel("This is a pop up window")
+        label = QLabel("Select your object")
         layout.addWidget(label)
         button1 = QPushButton("Rock",self)
         button2 = QPushButton("Satellite",self)
+        button2.setDisabled(True)
         button1.clicked.connect(self.button1_pressed)
         button2.clicked.connect(self.button2_pressed)
         
         layout.addWidget(button1)
         layout.addWidget(button2)
-        self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint )
         
         self.show()
 
@@ -160,11 +154,13 @@ class MainWindow(QMainWindow):
         exitAct = QAction('Add new', self)
         exitAct.triggered.connect(self.add_menu)
 
+        runAct = QAction('Run', self)
+        runAct.triggered.connect(self.run_animation)
         # Create the toolbar
         toolbar = self.addToolBar('Toolbar')
         toolbar.addAction(exitAct)
+        toolbar.addAction(runAct)
         
-    
         
         # Create a QGraphicsView and set its scene
         self.graphics_view = QGraphicsView()
@@ -204,11 +200,10 @@ class MainWindow(QMainWindow):
             param_win = enter_parametrs()
             if param_win.exec_() == QDialog.Accepted:
                 param = param_win.get_params()
-            print(param)
-            param_win.exec_()
-            size = param["size"]
+                
+            self.object_params.append(param)
             pos = param["pos"]
-            temp = QGraphicsRectItem(pos[0], pos[1], size[0], size[1])
+            temp = QGraphicsRectItem(pos[0], pos[1], 20, 20)
             temp.setFlag(QGraphicsRectItem.ItemIsMovable)
             
             if(self.add_new_object == "rock"):
@@ -219,9 +214,16 @@ class MainWindow(QMainWindow):
             self.scene.addItem(temp)
         
     def run_animation(self):
-        for item in self.scene.items():
-            if isinstance(item, QGraphicsRectItem):
-                print(f"Found QGraphicsRectItem at position ({item.pos().x()}, {item.pos().y()})")
+        # update pos for all objects
+        for i in range(len(self.scene.items())):
+            if isinstance(self.scene.items()[i], QGraphicsRectItem):
+                object_params = self.object_params[i]
+                temp_pos = (self.scene.items()[i].pos().x(),self.scene.items()[i].pos().y(),object_params["pos"][2])
+                self.object_params[i].update({"pos":temp_pos})
+                print(self.object_params[i])
+                
+        # run animation
+
     
     def on_text_entered(self, text):
         self.add_new_object = text
