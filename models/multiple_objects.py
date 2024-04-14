@@ -27,6 +27,17 @@ def spherical_to_cartesian(coords):
     z = r * math.cos(theta)
     return [x, y, z]
 
+def spherical_to_cartesian_velocity(vel, coords):
+    if len(vel) != 3:
+        raise ValueError("Input list should contain 3 elements.")
+    
+    r, theta, phi = coords
+    vr, vtheta, vphi = vel
+    vx = vr * math.sin(theta) * math.cos(phi) - vtheta * math.cos(theta) * math.sin(phi) - vphi * math.sin(theta)
+    vy = vr * math.sin(theta) * math.sin(phi) + vtheta * math.cos(theta) * math.cos(phi)
+    vz = vr * math.cos(theta) - vphi * math.sin(theta)
+    return [vx, vy, vz]
+
 class Example(Scene):
     def construct(self):
 
