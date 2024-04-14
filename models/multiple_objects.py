@@ -41,7 +41,6 @@ class Example(Scene):
             [0, 0, 0],
             [1, 2, 1]
         ]
-        masses = [1, 2, 3]
         colours = [BLUE, GREEN, ORANGE]
         #TODO: for negative z values the dot should go behind the earth
         #TODO: apply for multiple objects 
@@ -75,7 +74,7 @@ class Example(Scene):
                     self.play(MoveAlongPath(trash, line, rate_func=linear, run_time=0.03))
                 else:
                     # get acceleration
-                    acceleration_rad = -(80/masses[index])/r_squared
+                    acceleration_rad = -80/r_squared
                     #update 
                     velocities_spherical[index][0] = velocities_spherical[index][0] + acceleration_rad * timestep
                     
