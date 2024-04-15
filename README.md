@@ -22,3 +22,11 @@ We have learned to produce aesthetically pleasing animations using the manim pac
 
 ## What's next for Space trash
 The model can be improved to allow for more efficiency in the code, allowing to include many more objects in orbit. The neural network model can be expanded to also allow the user to calculate potential collisions once the rocket is in orbit around Earth. The model could also try predict collisions with the space debris with the idea of helping a potential space debris collector. With a more advanced interface, the model can also be adapted for educational purposes, since it allows the user to explore the law of gravitation interactively.
+
+## Youtube videos of generated animations
+
+https://www.youtube.com/watch?v=I7jkuCWWGx4
+
+https://www.youtube.com/watch?v=DUPV5gGan0Y
+
+https://www.youtube.com/watch?v=3WtXgvOUy-E
