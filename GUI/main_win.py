@@ -259,7 +259,7 @@ class MainWindow(QMainWindow):
         # Run the script with the serialized JSON string as an argument
         subprocess.call(['python', script_path, args1, args2])
         
-        self.central_widget = VideoBackground("C:\\Program Files (x86)\\GitHub\\CS_hackathon\\media\\videos\\1080p60\\Example.mp4")
+        self.central_widget = VideoBackground("media\\videos\\1080p60\\Example.mp4")
         self.central_widget.setAcceptDrops(True)
         self.central_widget.setAlignment(Qt.AlignCenter)
         self.setCentralWidget(self.central_widget)
